@@ -9,12 +9,14 @@ def dl_from_list():
         lines = f.readlines()
         for line in lines:
             links.append(line.strip())
+        print(f'Read {len(links)} link(s)')
 
     if not os.path.exists("Downloads"):
         os.mkdir("Downloads")
 
-    for link in links:
+    for (i, link) in enumerate(links):
         youtube = pytube.YouTube(link)
+        print(f'Download {i+1}/{len(links)}. {youtube.title}')
         video = youtube.streams.get_highest_resolution()
         # video = youtube.streams.get_by_resolution(resolution="720p")
         video.download("Downloads")
