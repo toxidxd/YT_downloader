@@ -24,8 +24,29 @@ def dl_from_list():
     return print("Downloaded")
 
 
+def dl_from_link():
+    link = input('Input link: ')
+    youtube = pytube.YouTube(link)
+    print(f'Download {youtube.title}')
+    video = youtube.streams.get_highest_resolution()
+    video.download("Downloads")
+
+    return print("Downloaded")
+
+
 def main():
-    dl_from_list()
+    print("---YouTube downloader---\n1. Download from list\n2. Download from link\n0. Exit")
+    ch = int(input('Input number: '))
+    if ch == 1:
+        dl_from_list()
+    if ch == 2:
+        dl_from_list()
+    if ch == 0:
+        print('Exit')
+        exit()
+    else:
+        print("Wrong choice!")
+        exit()
 
 
 if __name__ == "__main__":
