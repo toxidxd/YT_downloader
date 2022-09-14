@@ -41,7 +41,6 @@ async def send_data(link, chat_id):
     await bot.send_document(chat_id=chat_id, document=open(file, 'rb'))
     # await bot.send_video(chat_id=chat_id, video=open(file, 'rb'))
     # video send with bugs
-    # await os.remove(file)
 
 
 if __name__ == '__main__':
