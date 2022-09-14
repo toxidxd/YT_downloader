@@ -1,6 +1,7 @@
+from email import message
 from os import getenv
 # from async_main import collect_data
-from aiogram import Bot, Dispatcher, executor, types
+from aiogram import Bot, Dispatcher, executor, types, utils
 from aiogram.dispatcher.filters import Text
 from aiofiles import os
 import pytube
@@ -27,9 +28,10 @@ async def link(message: types.Message):
     await send_data(link=link, chat_id=chat_id)
 
 
-async def dl_from_link(link):
+async def dl_from_link(link, chat_id):
     youtube = pytube.YouTube(link)
     print(f'Download {youtube.title}')
+    await bot.send_message(chat_id=chat_id, text=f'Downloading {youtube.title}')
     video = youtube.streams.get_highest_resolution()
     video.download(filename=f'{youtube.title}.mp4', output_path="Downloads")
     file = f"Downloads/{youtube.title}.mp4"
@@ -37,8 +39,13 @@ async def dl_from_link(link):
 
 
 async def send_data(link, chat_id):
-    file = await dl_from_link(link)
-    await bot.send_document(chat_id=chat_id, document=open(file, 'rb'))
+    file = await dl_from_link(link, chat_id)
+    try:
+        await bot.send_document(chat_id=chat_id, document=open(file, 'rb'))
+    except utils.exceptions.NetworkError:
+        print("NetworkError")
+        await bot.send_message(chat_id=chat_id, text="NetworkError. File too big.")
+        
     # await bot.send_video(chat_id=chat_id, video=open(file, 'rb'))
     # video send with bugs
 
