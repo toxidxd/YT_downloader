@@ -38,7 +38,8 @@ async def dl_from_link(link):
 
 async def send_data(link, chat_id):
     file = await dl_from_link(link)
-    await bot.send_video(chat_id=chat_id, video=open(file, 'rb'))
+    await bot.send_document(chat_id=chat_id, document=open(file, 'rb'))
+    # await bot.send_video(chat_id=chat_id, video=open(file, 'rb'))
     # await os.remove(file)
 
 
