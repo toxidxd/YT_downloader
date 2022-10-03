@@ -39,9 +39,9 @@ def main():
     ch = int(input('Input number: '))
     if ch == 1:
         dl_from_list()
-    if ch == 2:
+    elif ch == 2:
         dl_from_link()
-    if ch == 0:
+    elif ch == 0:
         print('Exit')
         exit()
     else:
