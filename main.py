@@ -40,7 +40,7 @@ def main():
     if ch == 1:
         dl_from_list()
     if ch == 2:
-        dl_from_list()
+        dl_from_link()
     if ch == 0:
         print('Exit')
         exit()
