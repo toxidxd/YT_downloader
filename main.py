@@ -34,13 +34,27 @@ def dl_from_link():
     return print("Downloaded")
 
 
+def dl_from_playlist():
+    link = input('Input link: ')
+    playlist = pytube.Playlist(link)
+        
+    for (i, video) in enumerate(playlist):
+        youtube = pytube.YouTube(video)
+        print(f'Download {i+1}/{len(playlist)}. {youtube.title}')
+        video = youtube.streams.get_highest_resolution()
+        # video = youtube.streams.get_by_resolution(resolution="720p")
+        video.download("Downloads")
+
+
 def main():
-    print("---YouTube downloader---\n1. Download from list\n2. Download from link\n0. Exit")
+    print("---YouTube downloader---\n1. Download from list\n2. Download from link\n3. Download from playlist\n0. Exit")
     ch = int(input('Input number: '))
     if ch == 1:
         dl_from_list()
     elif ch == 2:
         dl_from_link()
+    elif ch ==3:
+        dl_from_playlist()
     elif ch == 0:
         print('Exit')
         exit()
