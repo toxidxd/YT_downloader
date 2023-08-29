@@ -51,6 +51,7 @@ async def send_data(link, chat_id):
     file = await dl_from_link(link, chat_id)
     try:
         if os.path.getsize(file) >= 50000000:
+            await bot.send_message(chat_id=chat_id, text="File to big. Download resolution 480p.")
             low_res_file = await dl_low_res(link)
             if os.path.getsize(low_res_file) >= 50000000:
                 print('File to big. Converting.')
