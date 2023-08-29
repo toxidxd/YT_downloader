@@ -42,12 +42,11 @@ async def dl_from_link(link, chat_id):
 async def send_data(link, chat_id):
     file = await dl_from_link(link, chat_id)
     try:
-
         if os.path.getsize(file) >= 50000000:
             print('File to big. Converting.')
             await bot.send_message(chat_id=chat_id, text="File to big. Converting.")
-            new_file = compress_video(file, 49 * 1000)
-            await bot.send_document(chat_id=chat_id, document=open(new_file, 'rb'))
+            compressed_file = compress_video(file, 49 * 1000)
+            await bot.send_document(chat_id=chat_id, document=open(compressed_file, 'rb'))
         else:
             await bot.send_document(chat_id=chat_id, document=open(file, 'rb'))
     except utils.exceptions.NetworkError:
@@ -58,7 +57,7 @@ async def send_data(link, chat_id):
     # video send with bugs
 
 
-def compress_video(video_full_path, size_upper_bound, two_pass=True, filename_suffix='cps_'):
+async def compress_video(video_full_path, size_upper_bound, two_pass=True, filename_suffix='cps_'):
     """
     Compress video file to max-supported size.
     :param video_full_path: the video you want to compress.
