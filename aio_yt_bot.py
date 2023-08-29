@@ -39,15 +39,24 @@ async def dl_from_link(link, chat_id):
     return file
 
 
+async def dl_low_res(link):
+    youtube = pytube.YouTube(link)
+    video = youtube.streams.get_by_resolution('480p')
+    video.download(filename=f'{youtube.title}.mp4', output_path="Downloads")
+    file = f"Downloads/{youtube.title}.mp4"
+    return file
+
+
 async def send_data(link, chat_id):
     file = await dl_from_link(link, chat_id)
     try:
-
         if os.path.getsize(file) >= 50000000:
-            print('File to big. Converting.')
-            await bot.send_message(chat_id=chat_id, text="File to big. Converting.")
-            new_file = compress_video(file, 49 * 1000)
-            await bot.send_document(chat_id=chat_id, document=open(new_file, 'rb'))
+            low_res_file = await dl_low_res(link)
+            if os.path.getsize(low_res_file) >= 50000000:
+                print('File to big. Converting.')
+                await bot.send_message(chat_id=chat_id, text="File to big. Converting.")
+                new_file = await compress_video(file, 49 * 1000)
+                await bot.send_document(chat_id=chat_id, document=open(new_file, 'rb'))
         else:
             await bot.send_document(chat_id=chat_id, document=open(file, 'rb'))
     except utils.exceptions.NetworkError:
