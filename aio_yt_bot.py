@@ -39,9 +39,11 @@ async def dl_from_link(link, chat_id):
     return file
 
 
-async def dl_low_res(link):
+async def dl_low_res(link, res):
+    print(f'File to big. Download resolution {res}')
     youtube = pytube.YouTube(link)
-    video = youtube.streams.get_by_resolution('480p')
+    video = youtube.streams.get_by_resolution(resolution=res)
+    # youtube.streams.filter(progressive=True).order_by('resolution').first().download(filename=f'{youtube.title}.mp4', output_path="Downloads")
     video.download(filename=f'{youtube.title}.mp4', output_path="Downloads")
     file = f"Downloads/{youtube.title}.mp4"
     return file
@@ -52,14 +54,27 @@ async def send_data(link, chat_id):
     try:
         if os.path.getsize(file) >= 50000000:
             await bot.send_message(chat_id=chat_id, text="File to big. Download resolution 480p.")
-            low_res_file = await dl_low_res(link)
+            low_res_file = await dl_low_res(link, "480p")
+
             if os.path.getsize(low_res_file) >= 50000000:
-                print('File to big. Converting.')
-                await bot.send_message(chat_id=chat_id, text="File to big. Converting.")
-                new_file = await compress_video(low_res_file, 49 * 1000)
-                await bot.send_document(chat_id=chat_id, document=open(new_file, 'rb'))
+                await bot.send_message(chat_id=chat_id, text="File to big. Download resolution 360p.")
+                lowest_res_file = await dl_low_res(link, "360p")
+
+                if os.path.getsize(lowest_res_file) >= 50000000:
+                    print('File to big. Converting.')
+                    await bot.send_message(chat_id=chat_id, text="File to big. Converting.")
+                    compressed_file = await compress_video(lowest_res_file, 49 * 1000)
+                    await bot.send_document(chat_id=chat_id, document=open(compressed_file, 'rb'))
+
+                else:
+                    await bot.send_document(chat_id=chat_id, document=open(lowest_res_file, 'rb'))
+
+            else:
+                await bot.send_document(chat_id=chat_id, document=open(low_res_file, 'rb'))
+
         else:
             await bot.send_document(chat_id=chat_id, document=open(file, 'rb'))
+
     except utils.exceptions.NetworkError:
         print("NetworkError")
         await bot.send_message(chat_id=chat_id, text="NetworkError. File to big.")
