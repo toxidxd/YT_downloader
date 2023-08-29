@@ -45,7 +45,7 @@ async def send_data(link, chat_id):
         if os.path.getsize(file) >= 50000000:
             print('File to big. Converting.')
             await bot.send_message(chat_id=chat_id, text="File to big. Converting.")
-            compressed_file = compress_video(file, 49 * 1000)
+            compressed_file = await compress_video(file, 49 * 1000)
             await bot.send_document(chat_id=chat_id, document=open(compressed_file, 'rb'))
         else:
             await bot.send_document(chat_id=chat_id, document=open(file, 'rb'))
