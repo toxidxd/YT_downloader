@@ -58,7 +58,7 @@ async def send_data(link, chat_id):
     # video send with bugs
 
 
-def compress_video(video_full_path, size_upper_bound, two_pass=True, filename_suffix='cps_'):
+async def compress_video(video_full_path, size_upper_bound, two_pass=True, filename_suffix='cps_'):
     """
     Compress video file to max-supported size.
     :param video_full_path: the video you want to compress.
