@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Видео Загрузчик</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .video-preview {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .video-preview img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .video-preview h3 {
+            color: #333;
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+
+        .download-link {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .download-link:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .history-section {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .history-title {
+            font-size: 1.1rem;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .history-list {
+            list-style: none;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            padding: 10px;
+            background: #f8f9fa;
+            margin-bottom: 5px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .history-item:hover {
+            background: #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📥 YouTube Видео Загрузчик</h1>
+        <p class="subtitle">Скачайте видео с YouTube в один клик!</p>
+
+        <form id="downloadForm" onsubmit="handleSubmit(event)">
+            <div class="input-group">
+                <label for="url">Вставьте ссылку на YouTube видео:</label>
+                <input
+                    type="text"
+                    id="url"
+                    name="url"
+                    placeholder="https://www.youtube.com/watch?v=..."
+                    required
+                    autocomplete="off"
+                >
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="downloadBtn">
+                Скачать видео
+            </button>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <span>Загрузка видео... Пожалуйста, подождите</span>
+        </div>
+
+        <div id="result"></div>
+        <div class="video-preview" id="videoPreview" style="display: none;"></div>
+
+        <div class="history-section">
+            <h2 class="history-title">📁 История загрузок</h2>
+            <button onclick="loadHistory()" class="btn" style="width: auto; padding: 10px 20px; font-size: 0.9rem;">
+                🔄 Обновить список
+            </button>
+            <ul class="history-list" id="historyList">
+                <li style="padding: 15px; color: #999; text-align: center;">Нет доступных загрузок</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        async function handleSubmit(event) {
+            event.preventDefault();
+
+            const url = document.getElementById('url').value.trim();
+            const downloadBtn = document.getElementById('downloadBtn');
+            const loading = document.getElementById('loading');
+            const resultDiv = document.getElementById('result');
+            const videoPreview = document.getElementById('videoPreview');
+
+            // Сброс интерфейса
+            resultDiv.style.display = 'none';
+            videoPreview.style.display = 'none';
+            document.getElementById('url').disabled = true;
+            downloadBtn.disabled = true;
+            loading.style.display = 'flex';
+
+            try {
+                const response = await fetch('/api/download', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Показываем успешный результат
+                    resultDiv.className = 'success';
+                    resultDiv.innerHTML = `
+                        <strong>✅ Успешно!</strong><br>
+                        ${data.title}<br>
+                        Длительность: ${(data.duration / 60).toFixed(1)} мин
+                    `;
+                    videoPreview.style.display = 'block';
+                    videoPreview.innerHTML = `
+                        <a href="${data.download_url}" class="download-link" download target="_blank">
+                            ⬇️ Скачать видео
+                        </a>
+                        ${data.thumbnail ? `<img src="${data.thumbnail}" alt="${data.title}">` : ''}
+                    `;
+                } else {
+                    resultDiv.className = 'error';
+                    resultDiv.innerHTML = `<strong>${data.error}</strong>`;
+                }
+
+            } catch (error) {
+                resultDiv.className = 'error info';
+                resultDiv.innerHTML = `⚠️ Ошибка сети: ${error.message}`;
+            } finally {
+                loading.style.display = 'none';
+                document.getElementById('url').disabled = false;
+                downloadBtn.disabled = false;
+                resultDiv.style.display = 'block';
+            }
+        }
+
+        async function loadHistory() {
+            try {
+                const response = await fetch('/api/history');
+                const data = await response.json();
+
+                const historyList = document.getElementById('historyList');
+
+                if (!data.success || !data.files || data.files.length === 0) {
+                    historyList.innerHTML = '<li style="padding: 15px; color: #999; text-align: center;">Нет доступных загрузок</li>';
+                    return;
+                }
+
+                historyList.innerHTML = data.files.map(filename => `
+                    <li class="history-item">
+                        ${filename}
+                    </li>
+                `).join('');
+
+            } catch (error) {
+                console.error('Ошибка загрузки истории:', error);
+            }
+        }
+
+        // Автоматически загружаем историю при старте
+        loadHistory();
+    </script>
+</body>
+</html>
