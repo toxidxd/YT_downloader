@@ -2,450 +2,75 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Видео Загрузчик</title>
+    <title>YouTube Downloader</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 600px;
-            width: 100%;
-        }
-
-        h1 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 10px;
-            font-size: 2rem;
-        }
-
-        .subtitle {
-            color: #666;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 0.9rem;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            color: #333;
-            margin-bottom: 8px;
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
-
-        input[type="text"]:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
-        }
-
-        .btn {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-check-version {
-            background: #28a745;
-            color: white;
-            font-size: 0.9rem;
-            margin-bottom: 10px;
-        }
-
-        .btn-check-version:hover:not(:disabled) {
-            background: #218838;
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        #result {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 10px;
-            display: none;
-        }
-
-        .success {
-            background: #d4edda;
-            border: 1px solid #c3e6cb;
-            color: #155724;
-        }
-
-        .error {
-            background: #f8d7da;
-            border: 1px solid #f5c6cb;
-            color: #721c24;
-        }
-
-        .info {
-            background: #d1ecf1;
-            border: 1px solid #bee5eb;
-            color: #0c5460;
-        }
-
-        .warning {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            color: #856404;
-        }
-
-        .loading {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: #e9ecef;
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 15px;
-            display: none;
-        }
-
-        .spinner {
-            width: 24px;
-            height: 24px;
-            border: 3px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .video-preview {
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .video-preview img {
-            max-width: 100%;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .video-preview h3 {
-            color: #333;
-            margin-top: 10px;
-            font-size: 1rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .download-link {
-            display: inline-block;
-            margin-top: 15px;
-            padding: 10px 20px;
-            background: #28a745;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .download-link:hover {
-            background: #218838;
-            transform: translateY(-2px);
-        }
-
-        .history-section {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 2px solid #e0e0e0;
-        }
-
-        .history-title {
-            font-size: 1.1rem;
-            color: #333;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .history-list {
-            list-style: none;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .history-item {
-            padding: 10px;
-            background: #f8f9fa;
-            margin-bottom: 5px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            color: #666;
-        }
-
-        .history-item:hover {
-            background: #e9ecef;
-        }
-
-                .platform-badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-left: 8px;
-        }
-
-        .badge-youtube { background: #ff0000; color: white; }
-        .badge-vimeo { background: #00adef; color: white; }
-        .badge-dailymotion { background: #ef3636; color: white; }
-
-        .check-version {
-            text-align: center;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 0 15px; }
+        .controls { margin-bottom: 20px; }
+        input[type="text"] { width: 70%; padding: 8px; }
+        button { padding: 8px 16px; cursor: pointer; }
+        #status-area { margin-top: 20px; white-space: pre-wrap; }
+        .status-pending { color: #666; }
+        .status-downloading { color: #007bff; }
+        .status-done { color: #28a745; }
+        .status-error { color: #dc3545; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>📥 YouTube Видео Загрузчик</h1>
-        <p class="subtitle">Скачайте видео с YouTube, Vimeo, Dailymotion и других платформ!</p>
-
-        <div class="check-version" id="versionCheck">
-            <strong>Проверка yt-dlp...</strong>
-            <button onclick="checkYtDlpVersion()" style="margin-top: 10px; padding: 8px 20px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">Проверить версию</button>
-        </div>
-
-
-        <form id="downloadForm" onsubmit="handleSubmit(event)">
-            <div class="input-group">
-                <label for="url">Вставьте ссылку на видео:</label>
-                <select id="platform" style="width: 100%; padding: 5px; margin-bottom: 8px; border-radius: 5px; border: 1px solid #ddd;">
-                    <option value="" disabled selected>Выберите платформу</option>
-                    <option value="youtube">YouTube</option>
-                    <option value="vimeo">Vimeo</option>
-                    <option value="dailymotion">Dailymotion</option>
-                    <option value="facebook">Facebook Video</option>
-                </select>
-                <input
-                    type="text"
-                    id="url"
-                    name="url"
-                    placeholder="Вставьте ссылку на видео..."
-                    required
-                    autocomplete="off"
-                >
-            </div>
-
-            <button type="submit" class="btn btn-primary" id="downloadBtn">
-                Скачать видео
-            </button>
-        </form>
-
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <span id="loadingText">Обработка...</span>
-        </div>
-
-        <div id="result"></div>
-        <div class="video-preview" id="videoPreview" style="display: none;"></div>
-
-        <div class="history-section">
-            <h2 class="history-title">📁 История загрузок</h2>
-            <button onclick="loadHistory()" class="btn" style="width: auto; padding: 10px 20px; font-size: 0.9rem;">
-                🔄 Обновить список
-            </button>
-            <ul class="history-list" id="historyList">
-                <li style="padding: 15px; color: #999; text-align: center;">Нет доступных загрузок</li>
-            </ul>
-        </div>
+    <h1>Скачивание видео с YouTube</h1>
+    <div class="controls">
+        <input type="text" id="url" placeholder="Ссылка на YouTube видео">
+        <select id="resolution">
+            <option value="best">Лучшее качество</option>
+            <option value="1080">1080p</option>
+            <option value="720">720p</option>
+            <option value="480">480p</option>
+        </select>
+        <button onclick="startDownload()">Скачать</button>
     </div>
+    <div id="status-area"></div>
 
     <script>
-        async function checkYtDlpVersion() {
-            try {
-                const response = await fetch('/api/installed');
-                const data = await response.json();
-
-                const versionDiv = document.getElementById('versionCheck');
-
-                if (data.success) {
-                    versionDiv.innerHTML = `
-                        <strong>✅ yt-dlp установлен:</strong><br>
-                        ${data.version}
-                    `;
-                } else {
-                    versionDiv.innerHTML = `
-                        <strong>⚠️ yt-dlp не установлен!</strong><br>
-                        ${data.error}<br>
-                        <button onclick="window.location.href='https://github.com/yt-dlp/yt-dlp'" style="margin-top: 10px; padding: 8px 20px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">Установить вручную</button>
-                    `;
-                }
-            } catch (error) {
-                console.error('Ошибка проверки:', error);
-            }
-        }
-
-        async function handleSubmit(event) {
-            event.preventDefault();
-
+        async function startDownload() {
             const url = document.getElementById('url').value.trim();
-            const platform = document.getElementById('platform').value;
-            const downloadBtn = document.getElementById('downloadBtn');
-            const loading = document.getElementById('loading');
-            const resultDiv = document.getElementById('result');
-            const videoPreview = document.getElementById('videoPreview');
+            const resolution = document.getElementById('resolution').value;
+            const statusArea = document.getElementById('status-area');
+            statusArea.textContent = 'Отправка запроса...';
 
-            // Сброс интерфейса
-            resultDiv.style.display = 'none';
-            videoPreview.style.display = 'none';
-            document.getElementById('url').disabled = true;
-            downloadBtn.disabled = true;
-            loading.style.display = 'flex';
+            const res = await fetch('/download', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({url, resolution})
+            });
+            const data = await res.json();
 
-            let platformPrefix = '';
-            if (platform) {
-                platformPrefix = ` (${platform})`;
+            if (data.error) {
+                statusArea.textContent = 'Ошибка: ' + data.error;
+                return;
             }
 
+            const jobId = data.job_id;
+            statusArea.innerHTML = `<b>Задача создана: ${jobId}</b><br>Статус: <span class="status-pending">ожидание</span><br>`;
+
+            checkStatus(jobId, statusArea);
+        }
+
+        async function checkStatus(jobId, statusArea) {
             try {
-                const response = await fetch('/api/download', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ url })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    // Показываем успешный результат
-                    resultDiv.className = 'success';
-
-                    let platformName = '';
-                    switch(platform) {
-                        case 'youtube': platformName = '<span class="platform-badge badge-youtube">YouTube</span>'; break;
-                        case 'vimeo': platformName = '<span class="platform-badge badge-vimeo">Vimeo</span>'; break;
-                        case 'dailymotion': platformName = '<span class="platform-badge badge-dailymotion">Dailymotion</span>'; break;
-                    }
-
-                    resultDiv.innerHTML = `
-                        <strong>✅ Успешно!</strong><br>
-                        ${platformName}<br>
-                        ${data.title}<br>
-                        Длительность: ${(data.duration / 60).toFixed(1)} мин
-                    `;
-                    videoPreview.style.display = 'block';
-                    videoPreview.innerHTML = `
-                        <a href="${data.download_url}" class="download-link" download target="_blank">
-                            ⬇️ Скачать видео
-                        </a>
-                        ${data.thumbnail ? `<img src="${data.thumbnail}" alt="${data.title}">` : ''}
-                    `;
+                const res = await fetch(`/status/${jobId}`);
+                const data = await res.json();
+                const span = statusArea.querySelector('.status-' + data.status) || statusArea;
+                span.textContent = `Статус: ${data.status}`;
+                if (data.status === 'done') {
+                    statusArea.innerHTML += `<br><a href="/download-file/${jobId}" download>Скачать файл</a>`;
+                } else if (data.status === 'error') {
+                    statusArea.innerHTML += `<br>Ошибка: ${data.error || 'Неизвестная ошибка'}`;
                 } else {
-                    resultDiv.className = 'error';
-                    resultDiv.innerHTML = `<strong>${data.error}</strong>`;
-
-                    if (data.error.includes('не установлен')) {
-                        resultDiv.style.display = 'block';
-                        resultDiv.className += ' warning';
-                        resultDiv.innerHTML += `
-                            <br><small>Установите yt-dlp: pip install yt-dlp</small>
-                        `;
-                    }
+                    setTimeout(() => checkStatus(jobId, statusArea), 2000);
                 }
-
-            } catch (error) {
-                resultDiv.className = 'error info';
-                resultDiv.innerHTML = `⚠️ Ошибка сети: ${error.message}`;
-            } finally {
-                loading.style.display = 'none';
-                document.getElementById('url').disabled = false;
-                downloadBtn.disabled = false;
-                resultDiv.style.display = 'block';
+            } catch (e) {
+                statusArea.innerHTML += `<br>Ошибка соединения`;
             }
         }
-
-        async function loadHistory() {
-            try {
-                const response = await fetch('/api/history');
-                const data = await response.json();
-
-                const historyList = document.getElementById('historyList');
-
-                if (!data.success || !data.files || data.files.length === 0) {
-                    historyList.innerHTML = '<li style="padding: 15px; color: #999; text-align: center;">Нет доступных загрузок</li>';
-                    return;
-                }
-
-                historyList.innerHTML = data.files.map(filename => `
-                    <li class="history-item">
-                        ${filename}
-                    </li>
-                `).join('');
-
-            } catch (error) {
-                console.error('Ошибка загрузки истории:', error);
-            }
-        }
-
-        // Автоматически проверяем версию yt-dlp при старте
-        window.onload = function() {
-            setTimeout(checkYtDlpVersion, 1000);
-            loadHistory();
-        };
     </script>
 </body>
 </html>
