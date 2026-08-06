@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}История загрузок{% endblock %}
+
+{% block content %}
+<h2>История ваших загрузок</h2>
+{% if items %}
+<table>
+    <thead>
+        <tr>
+            <th>Название</th>
+            <th>Дата</th>
+            <th>Действие</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for item in items %}
+        <tr>
+            <td>{{ item.title }}</td>
+            <td>{{ item.timestamp }}</td>
+            <td>
+                <a href="{{ url_for('serve_file', filename=item.filename) }}" class="btn-small">Скачать снова</a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<form action="{{ url_for('clear_history') }}" method="POST" style="margin-top: 20px;">
+    <button type="submit" class="btn-small">Очистить историю</button>
+</form>
+{% else %}
+<p>Вы еще ничего не скачивали.</p>
+{% endif %}
+{% endblock %}

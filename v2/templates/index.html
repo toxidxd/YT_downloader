@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Скачать видео{% endblock %}
+
+{% block content %}
+<p style="text-align: center;">Вставьте ссылку на видео ниже:</p>
+<form method="POST">
+    <input type="text" name="video_url" placeholder="https://www.youtube.com/watch?v=..." required autocomplete="off">
+    <button type="submit">Скачать</button>
+</form>
+{% endblock %}
